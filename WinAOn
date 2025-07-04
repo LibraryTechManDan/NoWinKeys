@@ -1,0 +1,27 @@
+# Enable-WinA.ps1
+
+# Auto-elevate if not already running as admin
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+    [Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
+
+# Re-enable Action Center (Win + A)
+$regPath = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"
+
+# Remove the registry value if it exists
+if (Test-Path "$regPath") {
+    Remove-ItemProperty -Path $regPath -Name "DisableNotificationCenter" -ErrorAction SilentlyContinue
+}
+
+# Optional: remove the key if it's empty
+if ((Get-Item $regPath).Property.Count -eq 0) {
+    Remove-Item $regPath -Force
+}
+
+# Log the change
+Write-Output "[{0}] Re-enabled Action Center (Win + A enabled)" -f (Get-Date)
+
+# Restart to apply
+Restart-Computer -Force
