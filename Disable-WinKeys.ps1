@@ -13,10 +13,5 @@ Set-ItemProperty -Path $regPath -Name "NoWinKeys" -Value 1 -Type DWord
 # Log to terminal
 Write-Output "[{0}] Disabled Windows key shortcuts (NoWinKeys = 1)" -f (Get-Date)
 
-# Restart Explorer
-Stop-Process -Name explorer -Force
-Start-Process explorer
-
-# Auto-close after a moment
-Start-Sleep -Seconds 1
-exit
+# Restart the system
+Restart-Computer -Force
